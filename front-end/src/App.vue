@@ -30,7 +30,7 @@
     </div>
 
   <div class="footer">
-    <p>Want to see the source code for this site? You can see it <a href="https://github.com/BYU-CS-260-Winter-2021/lab-4-museum-of-ordinary-objects-brooklyn5w4g">here</a>
+    <p>Want to see the source code for this site? You can see it <a href="https://github.com/brooklyn5w4g/music-player">here</a>
     </p>
   </div>
 </div>
@@ -86,7 +86,13 @@ audio {
   padding-top: 10px;
 }
 
-
+a{
+  text-decoration: none;
+  color: black;
+}
+a:hover{
+  color: greenyellow;
+}
 
 .logo img{
   height: 50px;
@@ -122,7 +128,7 @@ body {
 /* Footer */
 .footer {
   height: 50px;
-  padding: 20px 100px 0px 100px;
+  padding: 10px;
   background: grey;
 }
 

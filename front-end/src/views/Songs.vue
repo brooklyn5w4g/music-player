@@ -60,6 +60,10 @@
   margin:2px;
   align-items: center;
 }
+
+.song:hover{
+  background:greenyellow;
+}
 </style>
 
 
