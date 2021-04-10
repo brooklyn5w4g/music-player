@@ -153,7 +153,10 @@ export default {
           albumID : this.currentAlbum,
           src: r1.data.src
         });
-        this.getSongs();
+        this.newSong.title = "";
+         this.newSong.album = "";
+        this.newSong.artist = "";
+	this.getSongs();
         
       } catch (error) {
         console.log(error);

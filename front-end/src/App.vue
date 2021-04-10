@@ -58,9 +58,9 @@ export default {
 
         this.$refs.songPlayer.load()
         return true;
-      } catch (error) {
-        console.log(error);
-      }
+      }catch(error){
+	console.log(error);
+	}
     },
   }
 }
@@ -134,6 +134,7 @@ body {
 
 .footer a {
   color: #000;
+  text-decoration: underline;
 }
 
 </style>

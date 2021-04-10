@@ -4,9 +4,9 @@ const bodyParser = require("body-parser");
 
 const multer = require('multer')
 const upload = multer({
-  dest: '../front-end/public/files/',
+  dest: '/var/www/mytunes.byujosh.com/files',
   limits: {
-    fileSize: 1000000000 // added 2 zeros
+    fileSize: 100000000000 // added 2 zeros
   }
 });
 
@@ -25,7 +25,6 @@ mongoose.connect('mongodb://localhost:27017/music-player', {
   useNewUrlParser: true
 });
 
-// Create a scheme for items in the museum: a title and a path to an image.
 const itemSchema = new mongoose.Schema({
   title: String,
   artist: String,
@@ -34,7 +33,6 @@ const itemSchema = new mongoose.Schema({
   src: String,
 });
 
-// Create a model for items in the museum.
 const Item = mongoose.model('Item', itemSchema);
 
 
@@ -45,10 +43,7 @@ const albumSchema = new mongoose.Schema({
 
 const Album = mongoose.model("Album",albumSchema);
 
-// Upload a photo. Uses the multer middleware for the upload and then returns
-// the path where the photo is stored in the file system.
 app.post('/api/files', upload.single('newSong'), async (req, res) => {
-  // Just a safety check
   if (!req.file) {
     return res.sendStatus(400);
   }
@@ -59,7 +54,6 @@ app.post('/api/files', upload.single('newSong'), async (req, res) => {
 
 
 
-// Create a new item in the museum: takes a title and a path to an image.
 app.post('/api/songs', async (req, res) => {
   const item = new Item({
     title: req.body.title,
@@ -77,7 +71,6 @@ app.post('/api/songs', async (req, res) => {
   }
 });
 
-// Get a list of all of the items in the museum.
 app.get('/api/songs', async (req, res) => {
   try {
     let songs = await Item.find();
@@ -158,7 +151,6 @@ app.get('/api/album/:albumID', async (req, res) => {
 
 
 app.post('/api/artwork', upload.single('newAlbum'), async (req, res) => {
-  // Just a safety check
   if (!req.file) {
     return res.sendStatus(400);
   }
@@ -168,7 +160,6 @@ app.post('/api/artwork', upload.single('newAlbum'), async (req, res) => {
 });
 
 
-// Create a new item in the museum: takes a title and a path to an image.
 app.post('/api/albums', async (req, res) => {
   const item = new Album({
     name: req.body.name,
@@ -223,4 +214,4 @@ app.put('/api/albums/:id', async (req,res) => {
   }
 });
 
-app.listen(3000, () => console.log('Server listening on port 3000!'));
+app.listen(3001, () => console.log('Server listening on port 3001!'));
