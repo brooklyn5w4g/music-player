@@ -6,7 +6,7 @@ import Songs from '../views/Songs.vue'
 Vue.use(VueRouter)
 
 const routes = [{
-    path: '/album',
+    path: '/album/:id',
     name: 'songs',
     component: Songs
   },

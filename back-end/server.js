@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 
 const multer = require('multer')
 const upload = multer({
-  dest: '/var/www/mytunes.byujosh.com/files',
+  dest: '../front-end/public/files',
   limits: {
     fileSize: 100000000000 // added 2 zeros
   }
@@ -25,23 +25,27 @@ mongoose.connect('mongodb://localhost:27017/music-player', {
   useNewUrlParser: true
 });
 
-const itemSchema = new mongoose.Schema({
-  title: String,
-  artist: String,
-  album: String,
-  albumID: String,
-  src: String,
-});
-
-const Item = mongoose.model('Item', itemSchema);
-
-
 const albumSchema = new mongoose.Schema({
   name: String,
   src: String,
 });
 
 const Album = mongoose.model("Album",albumSchema);
+
+const itemSchema = new mongoose.Schema({
+  title: String,
+  artist: String,
+  album: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Album'
+  },
+  src: String,
+});
+
+const Song = mongoose.model('Song', itemSchema);
+
+
+
 
 app.post('/api/files', upload.single('newSong'), async (req, res) => {
   if (!req.file) {
@@ -55,11 +59,22 @@ app.post('/api/files', upload.single('newSong'), async (req, res) => {
 
 
 app.post('/api/songs', async (req, res) => {
-  const item = new Item({
+  let myAlbum = null;
+  ///console.log(req.body)
+  try {
+    myAlbum = await Album.findOne({
+      _id: req.body.album._id
+    });
+  }
+  catch(error){
+    console.log(error);
+    res.sendStatus(500);
+  }
+
+  const item = new Song({
     title: req.body.title,
     artist : req.body.artist,
-    album : req.body.album,
-    albumID: req.body.albumID,
+    album : myAlbum,
     src: req.body.src
   });
   try {
@@ -73,7 +88,7 @@ app.post('/api/songs', async (req, res) => {
 
 app.get('/api/songs', async (req, res) => {
   try {
-    let songs = await Item.find();
+    let songs = await Song.find().populate('album');
     res.send(songs);
   } catch (error) {
     console.log(error);
@@ -83,7 +98,7 @@ app.get('/api/songs', async (req, res) => {
 
 app.delete('/api/songs/:id', async (req,res) => {
   try {
-    await Item.deleteOne({
+    await Song.deleteOne({
       _id: req.params.id
     });
     res.sendStatus(200);
@@ -96,10 +111,10 @@ app.delete('/api/songs/:id', async (req,res) => {
 
 app.get('/api/songs/:id', async (req,res) => {
   try {
-    let myItem = await Item.findOne({
+    let mySong = await Song.findOne({
       _id: req.params.id
-    });
-    res.send(myItem);
+    }).populate('album');
+    res.send(mySong);
   }
   catch(error){
     console.log(error);
@@ -110,12 +125,12 @@ app.get('/api/songs/:id', async (req,res) => {
 
 app.put('/api/songs/:id', async (req,res) => {
   try {
-    let mySong= await Item.findOne({
+    let mySong= await Song.findOne({
       _id: req.params.id
     });
     mySong.title = req.body.title;
     mySong.artist = req.body.artist;
-    mySong.album = req.body.album;
+  
     
     await mySong.save();
     res.sendStatus(200);
@@ -137,10 +152,15 @@ app.put('/api/songs/:id', async (req,res) => {
 //returns songs
 app.get('/api/album/:albumID', async (req, res) => {
   try {
-    let songs = await Item.find({
-      albumID: req.params.albumID
+    let myAlbum = await Album.findOne({
+      _id: req.params.albumID
     });
-    //console.log("getting songs" + req.params.albumID);
+    //console.log(myAlbum);
+    let songs = await Song.find({
+      album: myAlbum
+    }).populate('album');
+
+    //console.log(songs)
     res.send(songs);
   } catch (error) {
     console.log(error);
@@ -180,6 +200,19 @@ app.get('/api/albums', async (req, res) => {
     let albums = await Album.find();
     res.send(albums);
   } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+app.get('/api/albums/:id', async (req,res) => {
+  try {
+    let myAlbum = await Album.findOne({
+      _id: req.params.id
+    });
+    res.send(myAlbum)
+  }
+  catch(error){
     console.log(error);
     res.sendStatus(500);
   }

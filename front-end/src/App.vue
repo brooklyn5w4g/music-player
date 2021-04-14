@@ -22,7 +22,7 @@
   </div>
   <div class="player" >
       <p><strong>Song:</strong> {{currentSong.title}}</p> 
-      <p><strong>Album:</strong> {{currentSong.album}}</p> 
+      <p><strong>Album:</strong> {{currentSong.album.name}}</p> 
       <p><strong>Artist:</strong> {{currentSong.artist}}</p>
       <audio ref="songPlayer" controls>
         <source :src="currentSong.src" type="audio/mpeg">
@@ -42,7 +42,7 @@ export default {
   name: 'App',
   data() {
     return {
-      currentSong : {title:"",album:"",artist:"",src:""}
+      currentSong : {title:"",album:{},artist:"",src:""}
     }
   },
   computed: {

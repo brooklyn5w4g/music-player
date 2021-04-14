@@ -1,9 +1,13 @@
 <template>
 <div class="songs">
+  <div class="albumHead">
+  <img :src="currentAlbum.src"/>
+  <h2>{{currentAlbum.name}} </h2>
+  </div>
   <div class="song" v-for="song in songs" :key="song.id" @click="playSong(song._id)">
     <div class="info">
       <p><strong>Song:</strong> {{song.title}}</p> 
-      <p><strong>Album:</strong> {{song.album}}</p> 
+      <p><strong>Album:</strong> {{song.album.name}}</p> 
       <p><strong>Artist:</strong> {{song.artist}}</p>
     </div>
 
@@ -18,7 +22,6 @@
     <h2>Edit Song</h2> 
     <input v-model="newSong.title" placeholder="Title">
     <input v-model="newSong.artist" placeholder="Artist">
-    <input v-model="newSong.album" placeholder="Album">
     <button @click="cancelEdit()"> Cancel</button>
     <button @click="editSong(editId)">Edit</button>
 
@@ -27,7 +30,6 @@
     <h2>Add Song</h2> 
     <input v-model="newSong.title" placeholder="Title">
     <input v-model="newSong.artist" placeholder="Artist">
-    <input v-model="newSong.album" placeholder="Album">
 
     
     <input type="file" name="newSong" @change="fileChanged">
@@ -64,6 +66,10 @@
 .song:hover{
   background:greenyellow;
 }
+img{
+  width: 300px;
+  height: 300px;
+}
 </style>
 
 
@@ -77,19 +83,28 @@ export default {
       file: null,
       edit: false,
       editId: "",
-      currentAlbum : "",
-      newSong : {title:"",artist:"",album:"",src:""}
+      currentAlbum : {},
+      newSong : {title:"",artist:"",album:{},src:""}
     }
   },
   created() {
-    this.currentAlbum = this.$route.params.id
-    this.getSongs();
+    this.getAlbum(this.$route.params.id)
   },
   methods: {
+    async getAlbum(id){
+      try {
+        let response = await axios.get("/api/albums/" + id);
+        console.log(response.data)
+        this.currentAlbum = response.data;
+        this.getSongs();
+      } catch (error) {
+        console.log(error);
+      }
+      
+    },
     cancelEdit(){
       this.edit = false;
       this.newSong.title = "";
-      this.newSong.album = "";
       this.newSong.artist = "";
     },
     loadEditSong(song){
@@ -106,8 +121,9 @@ export default {
     },
     async getSongs() {
     try {
-      let response = await axios.get("/api/album/" + this.currentAlbum);
+      let response = await axios.get("/api/album/" + this.currentAlbum._id);
       this.songs = response.data;
+      console.log(this.songs)
       return true;
     } catch (error) {
       console.log(error);
@@ -128,10 +144,11 @@ export default {
         await axios.put("/api/songs/" + id, {
           title: this.newSong.title,
           artist : this.newSong.artist,
-          album : this.newSong.album,
         });
         
         this.getSongs();
+        this.cancelEdit();
+
         return true;
       } catch (error) {
         console.log(error);
@@ -149,14 +166,12 @@ export default {
         await axios.post('/api/songs', {
           title: this.newSong.title,
           artist : this.newSong.artist,
-          album : this.newSong.album,
-          albumID : this.currentAlbum,
+          album : this.currentAlbum,
           src: r1.data.src
         });
         this.newSong.title = "";
-         this.newSong.album = "";
         this.newSong.artist = "";
-	this.getSongs();
+        this.getSongs();
         
       } catch (error) {
         console.log(error);

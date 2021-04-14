@@ -4,8 +4,7 @@
 <div class="albums">
   <div class="albumContainer">
     <div class="album" v-for="album in albums" :key="album._id" >
-      
-      <img :src="album.src" @click="openAlbum(album._id)"/>
+      <router-link :to="{ name: 'songs', params: { id: album._id }}"><img :src="album.src" /></router-link>
       <div class="albumFoot">
         <h3> {{album.name}} </h3>
 
