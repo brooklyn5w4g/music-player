@@ -2,6 +2,7 @@
 
 <template>
 <div class="albums">
+  <h2>{{currentName}}'s Albums</h2>
   <div class="albumContainer">
     <div class="album" v-for="album in albums" :key="album._id" >
       <router-link :to="{ name: 'songs', params: { id: album._id }}"><img :src="album.src" /></router-link>
@@ -35,33 +36,6 @@
 </template>
 
 
-<style scoped>
-
-img{
-  width: 300px;
-  height: 300px;
-}
-.albumContainer{
-  display:flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.album{
-  display: flex;
-  flex-direction: column;
-  width:300px;
-  padding: 20px;
-}
-
-.albumFoot{
-  display:flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-}
-</style>
-
 
 <script>
 import axios from 'axios';
@@ -79,6 +53,11 @@ export default {
   created() {
     this.getAlbums();
       
+  },
+  computed: {
+    currentName(){
+      return this.$root.$data.user.firstname + " " + this.$root.$data.user.lastname;
+    }
   },
   methods: {
     cancelEdit(){
@@ -149,3 +128,31 @@ export default {
 }
 </script>
 
+<style scoped>
+h2 {
+  text-align: center;
+}
+img{
+  width: 300px;
+  height: 300px;
+}
+.albumContainer{
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.album{
+  display: flex;
+  flex-direction: column;
+  width:300px;
+  padding: 20px;
+}
+
+.albumFoot{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+</style>
